@@ -16,6 +16,7 @@
 - **Implements** Linear region support.
 - **Bug fixes** for several Minecraft issues.
 - **Plugin compatibility** with Spigot & Paper plugins.
+- **Completely** removed Timings to save your performance.
 
 ## Downloads
 
