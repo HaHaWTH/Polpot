@@ -35,4 +35,4 @@ Patches are licensed under GPL-3.0.
 All other files are licensed under MIT.
 
 ###### And we don't steal logo from Polpot!(?)
-<img src="polpot.GIF" height="240" alt="Polpot" align="right">
+<img src="polpot.GIF" alt="Polpot" align="center">
