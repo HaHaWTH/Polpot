@@ -30,9 +30,9 @@ index 0000000000000000000000000000000000000000..6ab4a0ae2a0f63e4dfdb36a561ccda2a
 +public class DivineCommand extends Command {
 +    public DivineCommand(String name) {
 +        super(name);
-+        this.description = "DivineMC related commands";
-+        this.usageMessage = "/divinemc [reload | version]";
-+        this.setPermission("bukkit.command.divinemc");
++        this.description = "Polpot related commands";
++        this.usageMessage = "/polpot [reload | version]";
++        this.setPermission("bukkit.command.polpot");
 +    }
 +
 +    @Override
@@ -59,14 +59,14 @@ index 0000000000000000000000000000000000000000..6ab4a0ae2a0f63e4dfdb36a561ccda2a
 +            Command.broadcastCommandMessage(sender, ChatColor.RED + "If you encounter any issues please use the /stop command to restart your server.");
 +
 +            MinecraftServer console = MinecraftServer.getServer();
-+            DivineConfig.init((File) console.options.valueOf("divinemc-settings"));
++            DivineConfig.init((File) console.options.valueOf("polpot-settings"));
 +            for (ServerLevel level : console.getAllLevels()) {
 +                level.divinemcConfig.init();
 +                level.resetBreedingCooldowns();
 +            }
 +            console.server.reloadCount++;
 +
-+            Command.broadcastCommandMessage(sender, ChatColor.GREEN + "DivineMC config reload complete.");
++            Command.broadcastCommandMessage(sender, ChatColor.GREEN + "Polpot config reload complete.");
 +        } else if (args[0].equalsIgnoreCase("version")) {
 +            Command verCmd = org.bukkit.Bukkit.getServer().getCommandMap().getCommand("version");
 +            if (verCmd != null) {
@@ -108,13 +108,10 @@ index 0000000000000000000000000000000000000000..fa7ee2b2778a26d0e466bdc05ade26a5
 +
 +@SuppressWarnings("unused")
 +public class DivineConfig {
-+    private static final String HEADER = "This is the main configuration file for DivineMC.\n"
++    private static final String HEADER = "This is the main configuration file for Polpot.\n"
 +            + "If you need help with the configuration or have any questions related to DivineMC,\n"
 +            + "join us in our Discord server.\n"
-+            + "\n"
-+            + "Discord: https://discord.gg/p7cxhw7E2M \n"
-+            + "Docs: https://divinemc.bxteam.gq/docs \n"
-+            + "New builds: https://github.com/DivineMC/DivineMC/releases/latest";
++            + "\n";
 +    private static File CONFIG_FILE;
 +    public static YamlConfiguration config;
 +
@@ -130,7 +127,7 @@ index 0000000000000000000000000000000000000000..fa7ee2b2778a26d0e466bdc05ade26a5
 +            config.load(CONFIG_FILE);
 +        } catch (IOException ignore) {
 +        } catch (InvalidConfigurationException ex) {
-+            Bukkit.getLogger().log(Level.SEVERE, "Could not load divinemc.yml, please correct your syntax errors", ex);
++            Bukkit.getLogger().log(Level.SEVERE, "Could not load polpot.yml, please correct your syntax errors", ex);
 +            throw Throwables.propagate(ex);
 +        }
 +        config.options().header(HEADER);
@@ -138,7 +135,7 @@ index 0000000000000000000000000000000000000000..fa7ee2b2778a26d0e466bdc05ade26a5
 +        verbose = getBoolean("verbose", false);
 +
 +        commands = new HashMap<>();
-+        commands.put("divinemc", new DivineCommand("divinemc"));
++        commands.put("polpot", new DivineCommand("polpot"));
 +
 +        version = getInt("config-version", 3);
 +        set("config-version", 3);
@@ -160,7 +157,7 @@ index 0000000000000000000000000000000000000000..fa7ee2b2778a26d0e466bdc05ade26a5
 +
 +    public static void registerCommands() {
 +        for (Map.Entry<String, Command> entry : commands.entrySet()) {
-+            MinecraftServer.getServer().server.getCommandMap().register(entry.getKey(), "DivineMC", entry.getValue());
++            MinecraftServer.getServer().server.getCommandMap().register(entry.getKey(), "Polpot", entry.getValue());
 +        }
 +    }
 +
@@ -335,7 +332,7 @@ index d21260dd1b7305949f063123b427dec1f5a00ae5..e64ac037eeeebd3b14d8652bdea7b05b
  
 +        // DivineMC start
 +        try {
-+            io.wdsj.polpot.configuration.DivineConfig.init((java.io.File) options.valueOf("divinemc-settings"));
++            io.wdsj.polpot.configuration.DivineConfig.init((java.io.File) options.valueOf("polpot-settings"));
 +        } catch (Exception e) {
 +            DedicatedServer.LOGGER.error("Unable to load server configuration", e);
 +            return false;
@@ -391,7 +388,7 @@ index 08808e9d98380792b4d4c944b7b1723a3efb346d..c5c5731a755fe635384aad24c3ac5152
          org.spigotmc.SpigotConfig.init((File) this.console.options.valueOf("spigot-settings")); // Spigot
          this.console.paperConfigurations.reloadConfigs(this.console);
          org.purpurmc.purpur.PurpurConfig.init((File) console.options.valueOf("purpur-settings")); // Purpur
-+        io.wdsj.polpot.configuration.DivineConfig.init((File) console.options.valueOf("divinemc-settings")); // DivineMC
++        io.wdsj.polpot.configuration.DivineConfig.init((File) console.options.valueOf("polpot-settings")); // DivineMC
          for (ServerLevel world : this.console.getAllLevels()) {
              // world.serverLevelData.setDifficulty(config.difficulty); // Paper - per level difficulty
              world.setSpawnSettings(world.serverLevelData.getDifficulty() != Difficulty.PEACEFUL && config.spawnMonsters, config.spawnAnimals); // Paper - per level difficulty (from MinecraftServer#setDifficulty(ServerLevel, Difficulty, boolean))
@@ -434,10 +431,10 @@ index feed5a8042ef329e56fecd8096da08986dbd2032..13113730b2bc6a1d9ff7da278ee4b853
                  // Purpur end
  
 +                // DivineMC start
-+                acceptsAll(asList("divinemc", "divinemc-settings"), "File for divinemc settings")
++                acceptsAll(asList("polpot", "polpot-settings"), "File for polpot settings")
 +                        .withRequiredArg()
 +                        .ofType(File.class)
-+                        .defaultsTo(new File("divinemc.yml"))
++                        .defaultsTo(new File("polpot.yml"))
 +                        .describedAs("Yml file");
 +                // DivineMC end
 +
