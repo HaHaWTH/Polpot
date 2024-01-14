@@ -111,6 +111,9 @@ index 0000000000000000000000000000000000000000..fa7ee2b2778a26d0e466bdc05ade26a5
 +    private static final String HEADER = "This is the main configuration file for Polpot.\n"
 +            + "If you need help with the configuration or have any questions related to DivineMC,\n"
 +            + "join us in our Discord server.\n"
++            + "\n"
++            + "\n"
++            + "\n"
 +            + "\n";
 +    private static File CONFIG_FILE;
 +    public static YamlConfiguration config;
