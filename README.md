@@ -5,8 +5,8 @@
   <h3>Fork of Purpur compatible with Spigot plugins, offering the best performance for your server.</h3>
   <br>
   
-  [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/DivineMC/DivineMC/build.yml?logo=GoogleAnalytics&logoColor=ffffff&style=for-the-badge)](https://github.com/DivineMC/DivineMC/actions)
-  [![Download](https://img.shields.io/github/downloads/DivineMC/DivineMC/total?&style=for-the-badge&logoColor=ffffff)](https://github.com/DivineMC/DivineMC/releases/latest)
+  [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/HaHaWTH/Polpot/build.yml?logo=GoogleAnalytics&logoColor=ffffff&style=for-the-badge)](https://github.com/HaHaWTH/Polpot/actions)
+  [![Download](https://img.shields.io/github/downloads/HaHaWTH/Polpot/total?&style=for-the-badge&logoColor=ffffff)](https://github.com/HaHaWTH/Polpot/releases)
 </div>
 
 ## Features
@@ -20,7 +20,7 @@
 
 ## Downloads
 
-In normal case, you can download the latest JAR file from releases tab [here](https://github.com/DivineMC/DivineMC/releases/latest)
+In normal case, you can download the latest JAR file from releases tab [here](https://github.com/HaHaWTH/Polpot/releases)
 
 **Please note:** Java >= 17 is required.
 
