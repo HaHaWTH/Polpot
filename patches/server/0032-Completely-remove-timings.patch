@@ -842,7 +842,7 @@ index e10ef28420c755258f7fbe7935f8c8ab0fdcca50..24a88fb146fdcc54748ede097c7df4f4
          if (upnp) {
              if (dev.omega24.upnp4j.UPnP4J.close(this.getPort(), dev.omega24.upnp4j.util.Protocol.TCP)) {
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index bb4dbd93b5682e18f73ab5f37b9afdd325186902..972d7ad882687e18e78185379c8ee496eb021703 100644
+index 3ae82a5bf78ae78b82564415a1567cff357ff290..66c8676f2b73421124de7e8465431284e43fd588 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -1,36 +1,12 @@
@@ -1427,6 +1427,45 @@ index 3431f1a00ae2918b91a6b7a449e613e6e12ff6d4..f9dfbe9eac088b974ca443413584a39d
      // CraftBukkit start - data containers
      private static final CraftPersistentDataTypeRegistry DATA_TYPE_REGISTRY = new CraftPersistentDataTypeRegistry();
      public CraftPersistentDataContainer persistentDataContainer;
+diff --git a/src/main/java/org/bukkit/craftbukkit/scheduler/CraftScheduler.java b/src/main/java/org/bukkit/craftbukkit/scheduler/CraftScheduler.java
+index 7902c649a54fccbb13531c01e052df87ec4a424a..df2713eb0ce264a766206769aa137da69ec4195c 100644
+--- a/src/main/java/org/bukkit/craftbukkit/scheduler/CraftScheduler.java
++++ b/src/main/java/org/bukkit/craftbukkit/scheduler/CraftScheduler.java
+@@ -1,6 +1,6 @@
+ package org.bukkit.craftbukkit.scheduler;
+ 
+-import co.aikar.timings.MinecraftTimings; // Paper
++
+ import com.google.common.base.Preconditions;
+ import com.google.common.util.concurrent.ThreadFactoryBuilder;
+ import java.util.ArrayList;
+@@ -65,7 +65,7 @@ public class CraftScheduler implements BukkitScheduler {
+      */
+     private final AtomicInteger ids = new AtomicInteger(CraftScheduler.START_ID);
+     /**
+-     * Current head of linked-list. This reference is always stale, {@link CraftTask#next} is the live reference.
++     * Current head of linked-list. This reference is always stale,  is the live reference.
+      */
+     private volatile CraftTask head = new CraftTask();
+     /**
+@@ -302,7 +302,7 @@ public class CraftScheduler implements BukkitScheduler {
+                         }
+                         return false;
+                     }
+-                }){{this.timings=co.aikar.timings.MinecraftTimings.getCancelTasksTimer();}}; // Paper
++                }){}; // Paper
+         this.handle(task, 0L);
+         for (CraftTask taskPending = this.head.getNext(); taskPending != null; taskPending = taskPending.getNext()) {
+             if (taskPending == task) {
+@@ -342,7 +342,7 @@ public class CraftScheduler implements BukkitScheduler {
+                             }
+                         }
+                     }
+-                }){{this.timings=co.aikar.timings.MinecraftTimings.getCancelTasksTimer(plugin);}}; // Paper
++                }){}; // Paper
+         this.handle(task, 0L);
+         for (CraftTask taskPending = this.head.getNext(); taskPending != null; taskPending = taskPending.getNext()) {
+             if (taskPending == task) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/scheduler/CraftTask.java b/src/main/java/org/bukkit/craftbukkit/scheduler/CraftTask.java
 index 5835dc236b3f5291a804f7fb14a12eb466d4e0ba..a6dc7679602df92cd3f825c5727b58ce759e9554 100644
 --- a/src/main/java/org/bukkit/craftbukkit/scheduler/CraftTask.java
@@ -1505,43 +1544,28 @@ index 2b73e291e44987c4d63f2064091f7f8e28276b90..ba5747d6c776a76ce95777dec9a02820
      private static void activateEntity(Entity entity)
      {
 
-diff --git a/src/main/java/org/bukkit/craftbukkit/scheduler/CraftScheduler.java b/src/main/java/org/bukkit/craftbukkit/scheduler/CraftScheduler.java
-index 7902c649a54fccbb13531c01e052df87ec4a424a..efce502c12e320222b367fb10bb5f311c1c28568 100644
---- a/src/main/java/org/bukkit/craftbukkit/scheduler/CraftScheduler.java
-+++ b/src/main/java/org/bukkit/craftbukkit/scheduler/CraftScheduler.java
-@@ -1,6 +1,6 @@
- package org.bukkit.craftbukkit.scheduler;
 
--import co.aikar.timings.MinecraftTimings; // Paper
-+
- import com.google.common.base.Preconditions;
- import com.google.common.util.concurrent.ThreadFactoryBuilder;
- import java.util.ArrayList;
-@@ -65,7 +65,7 @@ public class CraftScheduler implements BukkitScheduler {
-      */
-     private final AtomicInteger ids = new AtomicInteger(CraftScheduler.START_ID);
-     /**
--     * Current head of linked-list. This reference is always stale, {@link CraftTask#next} is the live reference.
-+     * Current head of linked-list. This reference is always stale,  is the live reference.
-      */
-     private volatile CraftTask head = new CraftTask();
-     /**
-@@ -302,7 +302,7 @@ public class CraftScheduler implements BukkitScheduler {
-                         }
-                         return false;
-                     }
--                }){{this.timings=co.aikar.timings.MinecraftTimings.getCancelTasksTimer();}}; // Paper
-+                }); // Paper
-         this.handle(task, 0L);
-         for (CraftTask taskPending = this.head.getNext(); taskPending != null; taskPending = taskPending.getNext()) {
-             if (taskPending == task) {
-@@ -342,7 +342,7 @@ public class CraftScheduler implements BukkitScheduler {
-                             }
-                         }
-                     }
--                }){{this.timings=co.aikar.timings.MinecraftTimings.getCancelTasksTimer(plugin);}}; // Paper
-+                }); // Paper
-         this.handle(task, 0L);
-         for (CraftTask taskPending = this.head.getNext(); taskPending != null; taskPending = taskPending.getNext()) {
-             if (taskPending == task) {
-
+diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
+index 3d0dfd46b9440a4a80100dde5717b01c32e95981..f86ca90ee38707d4d0647926da6591a49082505e 100644
+--- a/src/main/java/org/bukkit/craftbukkit/Main.java
++++ b/src/main/java/org/bukkit/craftbukkit/Main.java
+@@ -365,8 +365,8 @@ public class Main {
+             tryPreloadClass("org.jline.terminal.impl.MouseSupport");
+             tryPreloadClass("org.jline.terminal.impl.MouseSupport$1");
+             tryPreloadClass("org.jline.terminal.Terminal$MouseTracking");
+-            tryPreloadClass("co.aikar.timings.TimingHistory");
+-            tryPreloadClass("co.aikar.timings.TimingHistory$MinuteReport");
++//            tryPreloadClass("co.aikar.timings.TimingHistory");
++//            tryPreloadClass("co.aikar.timings.TimingHistory$MinuteReport");
+             tryPreloadClass("io.netty.channel.AbstractChannelHandlerContext");
+             tryPreloadClass("io.netty.channel.AbstractChannelHandlerContext$11");
+             tryPreloadClass("io.netty.channel.AbstractChannelHandlerContext$12");
+@@ -379,7 +379,7 @@ public class Main {
+             tryPreloadClass("org.bukkit.craftbukkit.scheduler.CraftScheduler$1");
+             tryPreloadClass("org.bukkit.craftbukkit.scheduler.CraftScheduler$2");
+             tryPreloadClass("org.bukkit.craftbukkit.scheduler.CraftScheduler$3");
+-            tryPreloadClass("org.bukkit.craftbukkit.scheduler.CraftScheduler$4");
++//            tryPreloadClass("org.bukkit.craftbukkit.scheduler.CraftScheduler$4"); // Polpot - remove timings
+             tryPreloadClass("org.slf4j.helpers.MessageFormatter");
+             tryPreloadClass("org.slf4j.helpers.FormattingTuple");
+             tryPreloadClass("org.slf4j.helpers.BasicMarker");
