@@ -4,8 +4,21 @@ Date: Sun, 7 Jan 2024 11:56:00 +0300
 Subject: [PATCH] Configurable Chat message signatures
 
 
+diff --git a/src/main/java/io/papermc/paper/adventure/ChatProcessor.java b/src/main/java/io/papermc/paper/adventure/ChatProcessor.java
+index e4fd372a1d585887287253a02531cd192929377b..cd67cc71fb1f0bff1a1f3aad59c737440a27c299 100644
+--- a/src/main/java/io/papermc/paper/adventure/ChatProcessor.java
++++ b/src/main/java/io/papermc/paper/adventure/ChatProcessor.java
+@@ -355,7 +355,7 @@ public final class ChatProcessor {
+ 
+         private void sendToServer(final ChatType.Bound chatType, final @Nullable Function<Audience, net.minecraft.network.chat.Component> msgFunction) {
+             final PlayerChatMessage toConsoleMessage = msgFunction == null ? ChatProcessor.this.message : ChatProcessor.this.message.withUnsignedContent(msgFunction.apply(ChatProcessor.this.server.console));
+-            ChatProcessor.this.server.logChatMessage(toConsoleMessage.decoratedContent(), chatType, ChatProcessor.this.server.getPlayerList().verifyChatTrusted(toConsoleMessage) ? null : "Not Secure");
++            ChatProcessor.this.server.logChatMessage(toConsoleMessage.decoratedContent(), chatType, ChatProcessor.this.server.getPlayerList().verifyChatTrusted(toConsoleMessage) ? null : (io.wdsj.polpot.configuration.DivineConfig.chatMessageSignatures ? null : "Not Secure")); // DivineMC - Configurable Chat message signatures
+         }
+     }
+ 
 diff --git a/src/main/java/io/wdsj/polpot/configuration/DivineConfig.java b/src/main/java/io/wdsj/polpot/configuration/DivineConfig.java
-index def6f834d32b97e1065b17657e73d020a873bd14..c58eb66184d3e7fcf722d8871eb212eebed92646 100644
+index 1dfbf7b95f87958a11950d0b4c91b4ee34f2d429..b09dcedc6416f181b90ee8a0effb81cd0a17816f 100644
 --- a/src/main/java/io/wdsj/polpot/configuration/DivineConfig.java
 +++ b/src/main/java/io/wdsj/polpot/configuration/DivineConfig.java
 @@ -168,4 +168,9 @@ public class DivineConfig {
@@ -18,21 +31,8 @@ index def6f834d32b97e1065b17657e73d020a873bd14..c58eb66184d3e7fcf722d8871eb212ee
 +        chatMessageSignatures = getBoolean("settings.disable-chat-reports", chatMessageSignatures);
 +    }
  }
-diff --git a/src/main/java/io/papermc/paper/adventure/ChatProcessor.java b/src/main/java/io/papermc/paper/adventure/ChatProcessor.java
-index e4fd372a1d585887287253a02531cd192929377b..dcc806bcbdcc18f8094b8aa55e8a92a6b12a5f7c 100644
---- a/src/main/java/io/papermc/paper/adventure/ChatProcessor.java
-+++ b/src/main/java/io/papermc/paper/adventure/ChatProcessor.java
-@@ -355,7 +355,7 @@ public final class ChatProcessor {
- 
-         private void sendToServer(final ChatType.Bound chatType, final @Nullable Function<Audience, net.minecraft.network.chat.Component> msgFunction) {
-             final PlayerChatMessage toConsoleMessage = msgFunction == null ? ChatProcessor.this.message : ChatProcessor.this.message.withUnsignedContent(msgFunction.apply(ChatProcessor.this.server.console));
--            ChatProcessor.this.server.logChatMessage(toConsoleMessage.decoratedContent(), chatType, ChatProcessor.this.server.getPlayerList().verifyChatTrusted(toConsoleMessage) ? null : "Not Secure");
-+            ChatProcessor.this.server.logChatMessage(toConsoleMessage.decoratedContent(), chatType, ChatProcessor.this.server.getPlayerList().verifyChatTrusted(toConsoleMessage) ? null : (io.wdsj.polpot.configuration.DivineConfig.chatMessageSignatures ? null : "Not Secure")); // DivineMC - Configurable Chat message signatures
-         }
-     }
- 
 diff --git a/src/main/java/net/minecraft/network/protocol/game/ServerboundChatCommandPacket.java b/src/main/java/net/minecraft/network/protocol/game/ServerboundChatCommandPacket.java
-index b8c1f3b9afddc87d56541c8af63cffecfcdd2653..fbfd8cf782ec73a0498ccd6ec0b4110de83ffb2d 100644
+index b8c1f3b9afddc87d56541c8af63cffecfcdd2653..5a6221acb4ffce49995a10abd983d5e03644d632 100644
 --- a/src/main/java/net/minecraft/network/protocol/game/ServerboundChatCommandPacket.java
 +++ b/src/main/java/net/minecraft/network/protocol/game/ServerboundChatCommandPacket.java
 @@ -16,7 +16,7 @@ public record ServerboundChatCommandPacket(String command, Instant timeStamp, lo
@@ -45,7 +45,7 @@ index b8c1f3b9afddc87d56541c8af63cffecfcdd2653..fbfd8cf782ec73a0498ccd6ec0b4110d
      }
  
 diff --git a/src/main/java/net/minecraft/network/protocol/game/ServerboundChatPacket.java b/src/main/java/net/minecraft/network/protocol/game/ServerboundChatPacket.java
-index d1d2fc0c57523c1abf1e8bfec913c78927c3dafc..fa19289a2bbe5e6b72a505e45586a14670bc0c0b 100644
+index d1d2fc0c57523c1abf1e8bfec913c78927c3dafc..e7647af59cce2e6e495b54f76fbd40f33273776c 100644
 --- a/src/main/java/net/minecraft/network/protocol/game/ServerboundChatPacket.java
 +++ b/src/main/java/net/minecraft/network/protocol/game/ServerboundChatPacket.java
 @@ -17,7 +17,7 @@ public record ServerboundChatPacket(String message, Instant timeStamp, long salt
@@ -58,7 +58,7 @@ index d1d2fc0c57523c1abf1e8bfec913c78927c3dafc..fa19289a2bbe5e6b72a505e45586a146
      }
  
 diff --git a/src/main/java/net/minecraft/network/protocol/status/ServerStatus.java b/src/main/java/net/minecraft/network/protocol/status/ServerStatus.java
-index c40979e2fa37acb2f3df493395f3ab6e185345d7..16250b44775b2ccd02e2112600c9f3bab5820a98 100644
+index c40979e2fa37acb2f3df493395f3ab6e185345d7..717d1b0e0ce6ceeb25c8f3ad2a1a4f8c8dba0632 100644
 --- a/src/main/java/net/minecraft/network/protocol/status/ServerStatus.java
 +++ b/src/main/java/net/minecraft/network/protocol/status/ServerStatus.java
 @@ -17,7 +17,7 @@ import net.minecraft.network.chat.ComponentSerialization;
@@ -71,7 +71,7 @@ index c40979e2fa37acb2f3df493395f3ab6e185345d7..16250b44775b2ccd02e2112600c9f3ba
  
      public static record Favicon(byte[] iconBytes) {
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index e64ac037eeeebd3b14d8652bdea7b05bbd85c7c3..7cf002599cf6a982dc616228eb7a9091c0e92875 100644
+index 83b3ade6bb4b56dde7064c0174518f0e370ef9b6..bb4dbd93b5682e18f73ab5f37b9afdd325186902 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -686,6 +686,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
@@ -83,7 +83,7 @@ index e64ac037eeeebd3b14d8652bdea7b05bbd85c7c3..7cf002599cf6a982dc616228eb7a9091
  
          // Paper start - fix secure profile with proxy online mode
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index 37a3ce5da2cb89675e0180c4ed937e5851cd002b..c73217929e9ae8264052ec4d6d46ac2c84c70725 100644
+index 37a3ce5da2cb89675e0180c4ed937e5851cd002b..7a8a43f4f92c591ab6430f0c0b9a315cef715c8a 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
 @@ -2258,7 +2258,7 @@ public class ServerPlayer extends Player {
@@ -96,7 +96,7 @@ index 37a3ce5da2cb89675e0180c4ed937e5851cd002b..c73217929e9ae8264052ec4d6d46ac2c
  
      @Override
 diff --git a/src/main/java/net/minecraft/server/network/ServerCommonPacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-index da499e0b21eba40d24d95047e3a9220567d4bae7..af52d6c7f18f0837f4ffce95a310ddeedfe30df9 100644
+index da499e0b21eba40d24d95047e3a9220567d4bae7..11b9681947dce00d5efdf944a04addfe52f3a19c 100644
 --- a/src/main/java/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 @@ -4,7 +4,7 @@ import com.mojang.authlib.GameProfile;
@@ -157,7 +157,7 @@ index da499e0b21eba40d24d95047e3a9220567d4bae7..af52d6c7f18f0837f4ffce95a310ddee
          if (packet == null || this.processedDisconnect) { // Spigot
              return;
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index a52f0b7d76dc71d176d960fc4f67f0683127112e..39142f0619d20393e043eda61e6a82b0088a1c1e 100644
+index a52f0b7d76dc71d176d960fc4f67f0683127112e..d33fc495d751919b769e6034c675df0a9bdda059 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
 @@ -1469,7 +1469,7 @@ public abstract class PlayerList {
