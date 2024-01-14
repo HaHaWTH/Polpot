@@ -65,7 +65,7 @@ subprojects {
 }
 
 paperweight {
-    serverProject.set(project(":divinemc-server"))
+    serverProject.set(project(":polpot-server"))
 
     remapRepo.set("https://maven.fabricmc.net/")
     decompileRepo.set("https://files.minecraftforge.net/maven/")
@@ -78,10 +78,10 @@ paperweight {
             baseName("Purpur")
 
             apiPatchDir.set(layout.projectDirectory.dir("patches/api"))
-            apiOutputDir.set(layout.projectDirectory.dir("DivineMC-API"))
+            apiOutputDir.set(layout.projectDirectory.dir("Polpot-API"))
 
             serverPatchDir.set(layout.projectDirectory.dir("patches/server"))
-            serverOutputDir.set(layout.projectDirectory.dir("DivineMC-Server"))
+            serverOutputDir.set(layout.projectDirectory.dir("Polpot-Server"))
         }
     }
 }

@@ -11,7 +11,7 @@ index 20f760e678b3b9c5d5b2184f5b92f05932fb1256..8bd3c55dab2f637ad3e0b3043e560ac6
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
 @@ -185,8 +185,6 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
-     public final gq.bxteam.divinemc.configuration.DivineWorldConfig divinemcConfig; // DivineMC
+     public final io.wdsj.polpot.configuration.DivineWorldConfig divinemcConfig; // DivineMC
      public final co.aikar.timings.WorldTimingsHandler timings; // Paper
      public static BlockPos lastPhysicsProblem; // Spigot
 -    private org.spigotmc.TickLimiter entityLimiter;

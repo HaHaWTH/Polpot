@@ -13,7 +13,7 @@ index 790835a0c4889d17b4efd06cb463744973642a48..4c4a0b04a994bcbf0ddc183e54ad5f80
  dependencies {
      // Purpur start
 -    implementation(project(":purpur-api"))
-+    implementation(project(":divinemc-api")) // DivineMC
++    implementation(project(":polpot-api")) // Polpot
      implementation("io.papermc.paper:paper-mojangapi:${project.version}") {
          exclude("io.papermc.paper", "paper-api")
      }
@@ -22,7 +22,7 @@ index 790835a0c4889d17b4efd06cb463744973642a48..4c4a0b04a994bcbf0ddc183e54ad5f80
              "Main-Class" to "org.bukkit.craftbukkit.Main",
              "Implementation-Title" to "CraftBukkit",
 -            "Implementation-Version" to "git-Purpur-$implementationVersion", // Pufferfish // Purpur
-+            "Implementation-Version" to "git-DivineMC-$implementationVersion", // Pufferfish // Purpur // DivineMC
++            "Implementation-Version" to "git-Polpot-$implementationVersion", // Pufferfish // Purpur // Polpot
              "Implementation-Vendor" to date, // Paper
              "Specification-Title" to "Bukkit",
              "Specification-Version" to project.version,
@@ -35,7 +35,7 @@ index 8cde30544e14f8fc2dac32966ae3c21f8cf3a551..ad62e0b7deb141d22be4f19ea30f6144
              // Only start Metrics, if it's enabled in the config
              if (config.getBoolean("enabled", true)) {
 -                Metrics metrics = new Metrics("Purpur", serverUUID, logFailedRequests, Bukkit.getLogger()); // Pufferfish // Purpur
-+                Metrics metrics = new Metrics("DivineMC", serverUUID, logFailedRequests, Bukkit.getLogger()); // Pufferfish // Purpur // DivineMC
++                Metrics metrics = new Metrics("Polpot", serverUUID, logFailedRequests, Bukkit.getLogger()); // Pufferfish // Purpur // Polpot
  
                  metrics.addCustomChart(new Metrics.SimplePie("minecraft_version", () -> {
                      String minecraftVersion = Bukkit.getVersion();
@@ -48,7 +48,7 @@ index 462a6eed350fd660ddaf25d567bb6e97b77d0b2b..fb3d33117279df26ddd55005d16f80b6
      private static final java.util.regex.Pattern VER_PATTERN = java.util.regex.Pattern.compile("^([0-9\\.]*)\\-.*R"); // R is an anchor, will always give '-R' at end
      // Purpur start
 -    private static final String DOWNLOAD_PAGE = "https://purpurmc.org/downloads";
-+    private static final String DOWNLOAD_PAGE = "https://github.com/DivineMC/DivineMC/releases/latest"; // DivineMC
++    private static final String DOWNLOAD_PAGE = "https://github.com/Polpot/Polpot/releases/latest"; // Polpot
      private static int distance = -2; public int distance() { return distance; }
      // Purpur end
      private static @Nullable String mcVer;
@@ -56,7 +56,7 @@ index 462a6eed350fd660ddaf25d567bb6e97b77d0b2b..fb3d33117279df26ddd55005d16f80b6
      @Override
      public long getCacheTime() {
 -        return 720000;
-+        return 600000; // DivineMC - Decrease cache time to 10 minutes
++        return 600000; // Polpot - Decrease cache time to 10 minutes
      }
  
      @Nonnull
@@ -64,8 +64,8 @@ index 462a6eed350fd660ddaf25d567bb6e97b77d0b2b..fb3d33117279df26ddd55005d16f80b6
      public Component getVersionMessage(@Nonnull String serverVersion) {
 -        String[] parts = serverVersion.substring("git-Purpur-".length()).split("[-\\s]"); // Purpur
 -        final Component updateMessage = getUpdateStatusMessage("PurpurMC/Purpur", "ver/" + getMinecraftVersion(), parts[0]); // Purpur
-+        String[] parts = serverVersion.substring("git-DivineMC-".length()).split("[-\\s]"); // DivineMC
-+        final Component updateMessage = getUpdateStatusMessage("DivineMC/DivineMC", "ver/" + getMinecraftVersion(), parts[0]); // DivineMC
++        String[] parts = serverVersion.substring("git-Polpot-".length()).split("[-\\s]"); // Polpot
++        final Component updateMessage = getUpdateStatusMessage("Polpot/Polpot", "ver/" + getMinecraftVersion(), parts[0]); // Polpot
          final Component history = getHistory();
  
          return history != null ? Component.join(net.kyori.adventure.text.JoinConfiguration.separator(Component.newline()), history, updateMessage) : updateMessage; // Purpur
@@ -74,7 +74,7 @@ index 462a6eed350fd660ddaf25d567bb6e97b77d0b2b..fb3d33117279df26ddd55005d16f80b6
                  mcVer = result.substring(0, result.length() - 2); // strip 'R' anchor and trailing '-'
              } else {
 -                org.bukkit.Bukkit.getLogger().warning("Unable to match version to pattern! Report to Purpur!"); // Purpur
-+                org.bukkit.Bukkit.getLogger().warning("Unable to match version to pattern! Report to DivineMC!"); // DivineMC
++                org.bukkit.Bukkit.getLogger().warning("Unable to match version to pattern! Report to Polpot!"); // Polpot
                  org.bukkit.Bukkit.getLogger().warning("Pattern: " + VER_PATTERN.toString());
                  org.bukkit.Bukkit.getLogger().warning("Version: " + org.bukkit.Bukkit.getBukkitVersion());
              }
@@ -83,7 +83,7 @@ index 462a6eed350fd660ddaf25d567bb6e97b77d0b2b..fb3d33117279df26ddd55005d16f80b6
  
      private static Component getUpdateStatusMessage(@Nonnull String repo, @Nonnull String branch, @Nonnull String versionInfo) {
 -        //int distance; // Purpur - use field
-+        // DivineMC start - Branding
++        // Polpot start - Branding
          try {
 -            int jenkinsBuild = Integer.parseInt(versionInfo);
 -            distance = fetchDistanceFromSiteApi(jenkinsBuild, getMinecraftVersion());
@@ -91,9 +91,9 @@ index 462a6eed350fd660ddaf25d567bb6e97b77d0b2b..fb3d33117279df26ddd55005d16f80b6
              versionInfo = versionInfo.replace("\"", "");
              distance = fetchDistanceFromGitHub(repo, branch, versionInfo);
 +        } catch (Exception ex) {
-+            org.bukkit.Bukkit.getLogger().warning("Error obtaining version information! Report to DivineMC!");
++            org.bukkit.Bukkit.getLogger().warning("Error obtaining version information! Report to Polpot!");
          }
-+        // DivineMC end
++        // Polpot end
  
          switch (distance) {
              case -1:
@@ -133,7 +133,7 @@ index 3cb56595822799926a8141e60a42f5d1edfc6de5..05478a1ea04ec0396bc8c97090edef4a
      protected LineReader buildReader(LineReaderBuilder builder) {
          builder
 -                .appName("Purpur") // Purpur
-+                .appName("DivineMC") // DivineMC
++                .appName("Polpot") // Polpot
                  .variable(LineReader.HISTORY_FILE, java.nio.file.Paths.get(".console_history"))
                  .completer(new ConsoleCommandCompleter(this.server))
                  .option(LineReader.Option.COMPLETE_IN_WORD, true);
@@ -146,7 +146,7 @@ index 64e12201e164f4dc8070711605dcfcb6e56421f6..ad5c7d2f133834fd587ab0b8b5835313
          }
  
 -        final JFrame jframe = new JFrame("Purpur Minecraft server"); // Purpur
-+        final JFrame jframe = new JFrame("DivineMC Minecraft server"); // Purpur // DivineMC
++        final JFrame jframe = new JFrame("Polpot Minecraft server"); // Purpur // Polpot
          final MinecraftServerGui servergui = new MinecraftServerGui(server);
  
          jframe.setDefaultCloseOperation(2);
@@ -155,7 +155,7 @@ index 64e12201e164f4dc8070711605dcfcb6e56421f6..ad5c7d2f133834fd587ab0b8b5835313
          jframe.setLocationRelativeTo((Component) null);
          jframe.setVisible(true);
 -        jframe.setName("Purpur Minecraft server"); // Paper // Purpur
-+        jframe.setName("DivineMC Minecraft server"); // Paper // Purpur // DivineMC
++        jframe.setName("Polpot Minecraft server"); // Paper // Purpur // Polpot
  
          // Paper start - Add logo as frame image
          try {
@@ -164,7 +164,7 @@ index 64e12201e164f4dc8070711605dcfcb6e56421f6..ad5c7d2f133834fd587ab0b8b5835313
              public void windowClosing(WindowEvent windowevent) {
                  if (!servergui.isClosing.getAndSet(true)) {
 -                    jframe.setTitle("Purpur Minecraft server - shutting down!"); // Purpur
-+                    jframe.setTitle("DivineMC Minecraft server - shutting down!"); // Purpur // DivineMC
++                    jframe.setTitle("Polpot Minecraft server - shutting down!"); // Purpur // Polpot
                      server.halt(true);
                      servergui.runFinalizers();
                  }
@@ -177,7 +177,7 @@ index aa04387019f2aef5e7e54a9654c05f832d508295..08808e9d98380792b4d4c944b7b1723a
  
  public final class CraftServer implements Server {
 -    private final String serverName = "Purpur"; // Paper // Pufferfish // Purpur
-+    private final String serverName = "DivineMC"; // Paper // Pufferfish // Purpur // DivineMC
++    private final String serverName = "Polpot"; // Paper // Pufferfish // Purpur // Polpot
      private final String serverVersion;
      private final String bukkitVersion = Versioning.getBukkitVersion();
      private final Logger logger = Logger.getLogger("Minecraft");
@@ -190,7 +190,7 @@ index 99597258e8e88cd9e2c901c4ac3ff7faeeabee2b..b79b9f27c5cf09dfcf4cb0bdf7a3aa50
          String result = "Unknown-Version";
  
 -        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/org.purpurmc.purpur/purpur-api/pom.properties"); // Pufferfish // Purpur
-+        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/gq.bxteam.divinemc/divinemc-api/pom.properties"); // Pufferfish // Purpur // DivineMC
++        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/io.wdsj.polpot/polpot-api/pom.properties"); // Pufferfish // Purpur // Polpot
          Properties properties = new Properties();
  
          if (stream != null) {
@@ -203,7 +203,7 @@ index e9fc2b4661f5275b93db5d3fdf25a8bdc3b38920..e14a5be13af47162c3f03f7d75ecbe10
      }
  
 -    public static String serverModName = "Purpur";
-+    public static String serverModName = "DivineMC"; // DivineMC
++    public static String serverModName = "Polpot"; // Polpot
      private static void serverModName() {
          serverModName = getString("settings.server-mod-name", serverModName);
      }
@@ -216,7 +216,7 @@ index 5fc8cc40ab627eba0b2110c73d31af213a935733..3fbad431abf62022d0b343f251f34d89
                  } else
                  {
 -                    log.log(Level.SEVERE, "--- DO NOT REPORT THIS TO PURPUR - THIS IS NOT A BUG OR A CRASH  - " + Bukkit.getServer().getVersion() + " ---"); // Purpur
-+                    log.log(Level.SEVERE, "--- DO NOT REPORT THIS TO DIVINEMC - THIS IS NOT A BUG OR A CRASH  - " + Bukkit.getServer().getVersion() + " ---"); // Purpur // DivineMC
++                    log.log(Level.SEVERE, "--- DO NOT REPORT THIS TO POLPOT - THIS IS NOT A BUG OR A CRASH  - " + Bukkit.getServer().getVersion() + " ---"); // Purpur // Polpot
                      log.log(Level.SEVERE, "The server has not responded for " + (currentTime - lastTick) / 1000 + " seconds! Creating thread dump");
                  }
                  // Paper end - Different message for short timeout
@@ -225,7 +225,7 @@ index 5fc8cc40ab627eba0b2110c73d31af213a935733..3fbad431abf62022d0b343f251f34d89
                  }
                  } else {
 -                    log.log(Level.SEVERE, "--- DO NOT REPORT THIS TO PURPUR - THIS IS NOT A BUG OR A CRASH ---"); // Purpur
-+                    log.log(Level.SEVERE, "--- DO NOT REPORT THIS TO DIVINEMC - THIS IS NOT A BUG OR A CRASH ---"); // Purpur // DivineMC
++                    log.log(Level.SEVERE, "--- DO NOT REPORT THIS TO POLPOT - THIS IS NOT A BUG OR A CRASH ---"); // Purpur // Polpot
                  }
  
                  log.log( Level.SEVERE, "------------------------------" );

@@ -4,10 +4,10 @@ Date: Mon, 18 Sep 2023 00:35:27 +0300
 Subject: [PATCH] Do not process chat/commands before player has joined
 
 
-diff --git a/src/main/java/gq/bxteam/divinemc/configuration/DivineConfig.java b/src/main/java/gq/bxteam/divinemc/configuration/DivineConfig.java
+diff --git a/src/main/java/io/wdsj/polpot/configuration/DivineConfig.java b/src/main/java/io/wdsj/polpot/configuration/DivineConfig.java
 index fa7ee2b2778a26d0e466bdc05ade26a5ae0c17f4..11dc1af9f8d8ce8c0a855d14a35077f5482ef0e8 100644
---- a/src/main/java/gq/bxteam/divinemc/configuration/DivineConfig.java
-+++ b/src/main/java/gq/bxteam/divinemc/configuration/DivineConfig.java
+--- a/src/main/java/io/wdsj/polpot/configuration/DivineConfig.java
++++ b/src/main/java/io/wdsj/polpot/configuration/DivineConfig.java
 @@ -152,4 +152,9 @@ public class DivineConfig {
          }
          return builder.build();
@@ -26,7 +26,7 @@ index 68d4ccd7ae5719e66fd3f14e5bfce4675eb73a17..8244d269fcd179b285e5e3a36bff8e58
  import com.mojang.brigadier.ParseResults;
  import com.mojang.brigadier.StringReader;
  import com.mojang.logging.LogUtils;
-+import gq.bxteam.divinemc.configuration.DivineConfig;
++import io.wdsj.polpot.configuration.DivineConfig;
  import it.unimi.dsi.fastutil.ints.Int2ObjectMap.Entry;
  import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
  import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;

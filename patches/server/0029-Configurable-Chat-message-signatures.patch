@@ -4,10 +4,10 @@ Date: Sun, 7 Jan 2024 11:56:00 +0300
 Subject: [PATCH] Configurable Chat message signatures
 
 
-diff --git a/src/main/java/gq/bxteam/divinemc/configuration/DivineConfig.java b/src/main/java/gq/bxteam/divinemc/configuration/DivineConfig.java
+diff --git a/src/main/java/io/wdsj/polpot/configuration/DivineConfig.java b/src/main/java/io/wdsj/polpot/configuration/DivineConfig.java
 index def6f834d32b97e1065b17657e73d020a873bd14..c58eb66184d3e7fcf722d8871eb212eebed92646 100644
---- a/src/main/java/gq/bxteam/divinemc/configuration/DivineConfig.java
-+++ b/src/main/java/gq/bxteam/divinemc/configuration/DivineConfig.java
+--- a/src/main/java/io/wdsj/polpot/configuration/DivineConfig.java
++++ b/src/main/java/io/wdsj/polpot/configuration/DivineConfig.java
 @@ -168,4 +168,9 @@ public class DivineConfig {
          else
              linearFlushThreads = Math.max(linearFlushThreads, 1);
@@ -27,7 +27,7 @@ index e4fd372a1d585887287253a02531cd192929377b..dcc806bcbdcc18f8094b8aa55e8a92a6
          private void sendToServer(final ChatType.Bound chatType, final @Nullable Function<Audience, net.minecraft.network.chat.Component> msgFunction) {
              final PlayerChatMessage toConsoleMessage = msgFunction == null ? ChatProcessor.this.message : ChatProcessor.this.message.withUnsignedContent(msgFunction.apply(ChatProcessor.this.server.console));
 -            ChatProcessor.this.server.logChatMessage(toConsoleMessage.decoratedContent(), chatType, ChatProcessor.this.server.getPlayerList().verifyChatTrusted(toConsoleMessage) ? null : "Not Secure");
-+            ChatProcessor.this.server.logChatMessage(toConsoleMessage.decoratedContent(), chatType, ChatProcessor.this.server.getPlayerList().verifyChatTrusted(toConsoleMessage) ? null : (gq.bxteam.divinemc.configuration.DivineConfig.chatMessageSignatures ? null : "Not Secure")); // DivineMC - Configurable Chat message signatures
++            ChatProcessor.this.server.logChatMessage(toConsoleMessage.decoratedContent(), chatType, ChatProcessor.this.server.getPlayerList().verifyChatTrusted(toConsoleMessage) ? null : (io.wdsj.polpot.configuration.DivineConfig.chatMessageSignatures ? null : "Not Secure")); // DivineMC - Configurable Chat message signatures
          }
      }
  
@@ -40,7 +40,7 @@ index b8c1f3b9afddc87d56541c8af63cffecfcdd2653..fbfd8cf782ec73a0498ccd6ec0b4110d
          buf.writeInstant(this.timeStamp);
          buf.writeLong(this.salt);
 -        this.argumentSignatures.write(buf);
-+        if (!gq.bxteam.divinemc.configuration.DivineConfig.chatMessageSignatures) this.argumentSignatures.write(buf); // DivineMC - Configurable Chat message signatures
++        if (!io.wdsj.polpot.configuration.DivineConfig.chatMessageSignatures) this.argumentSignatures.write(buf); // DivineMC - Configurable Chat message signatures
          this.lastSeenMessages.write(buf);
      }
  
@@ -53,7 +53,7 @@ index d1d2fc0c57523c1abf1e8bfec913c78927c3dafc..fa19289a2bbe5e6b72a505e45586a146
          buf.writeInstant(this.timeStamp);
          buf.writeLong(this.salt);
 -        buf.writeNullable(this.signature, MessageSignature::write);
-+        if (!gq.bxteam.divinemc.configuration.DivineConfig.chatMessageSignatures) buf.writeNullable(this.signature, MessageSignature::write); // DivineMC - Configurable Chat message signatures
++        if (!io.wdsj.polpot.configuration.DivineConfig.chatMessageSignatures) buf.writeNullable(this.signature, MessageSignature::write); // DivineMC - Configurable Chat message signatures
          this.lastSeenMessages.write(buf);
      }
  
@@ -66,7 +66,7 @@ index c40979e2fa37acb2f3df493395f3ab6e185345d7..16250b44775b2ccd02e2112600c9f3ba
  public record ServerStatus(Component description, Optional<ServerStatus.Players> players, Optional<ServerStatus.Version> version, Optional<ServerStatus.Favicon> favicon, boolean enforcesSecureChat) {
      public static final Codec<ServerStatus> CODEC = RecordCodecBuilder.create((instance) -> {
 -        return instance.group(ComponentSerialization.CODEC.optionalFieldOf("description", CommonComponents.EMPTY).forGetter(ServerStatus::description), ServerStatus.Players.CODEC.optionalFieldOf("players").forGetter(ServerStatus::players), ServerStatus.Version.CODEC.optionalFieldOf("version").forGetter(ServerStatus::version), ServerStatus.Favicon.CODEC.optionalFieldOf("favicon").forGetter(ServerStatus::favicon), Codec.BOOL.optionalFieldOf("enforcesSecureChat", Boolean.valueOf(false)).forGetter(ServerStatus::enforcesSecureChat)).apply(instance, ServerStatus::new);
-+        return gq.bxteam.divinemc.configuration.DivineConfig.chatMessageSignatures ? instance.group(ComponentSerialization.CODEC.optionalFieldOf("description", CommonComponents.EMPTY).forGetter(ServerStatus::description), ServerStatus.Players.CODEC.optionalFieldOf("players").forGetter(ServerStatus::players), ServerStatus.Version.CODEC.optionalFieldOf("version").forGetter(ServerStatus::version), ServerStatus.Favicon.CODEC.optionalFieldOf("favicon").forGetter(ServerStatus::favicon), Codec.BOOL.optionalFieldOf("enforcesSecureChat", Boolean.FALSE).forGetter(x -> true)).apply(instance, ServerStatus::new) : instance.group(ComponentSerialization.CODEC.optionalFieldOf("description", CommonComponents.EMPTY).forGetter(ServerStatus::description), ServerStatus.Players.CODEC.optionalFieldOf("players").forGetter(ServerStatus::players), ServerStatus.Version.CODEC.optionalFieldOf("version").forGetter(ServerStatus::version), ServerStatus.Favicon.CODEC.optionalFieldOf("favicon").forGetter(ServerStatus::favicon), Codec.BOOL.optionalFieldOf("enforcesSecureChat", Boolean.FALSE).forGetter(ServerStatus::enforcesSecureChat)).apply(instance, ServerStatus::new); // DivineMC - Configurable Chat message signatures
++        return io.wdsj.polpot.configuration.DivineConfig.chatMessageSignatures ? instance.group(ComponentSerialization.CODEC.optionalFieldOf("description", CommonComponents.EMPTY).forGetter(ServerStatus::description), ServerStatus.Players.CODEC.optionalFieldOf("players").forGetter(ServerStatus::players), ServerStatus.Version.CODEC.optionalFieldOf("version").forGetter(ServerStatus::version), ServerStatus.Favicon.CODEC.optionalFieldOf("favicon").forGetter(ServerStatus::favicon), Codec.BOOL.optionalFieldOf("enforcesSecureChat", Boolean.FALSE).forGetter(x -> true)).apply(instance, ServerStatus::new) : instance.group(ComponentSerialization.CODEC.optionalFieldOf("description", CommonComponents.EMPTY).forGetter(ServerStatus::description), ServerStatus.Players.CODEC.optionalFieldOf("players").forGetter(ServerStatus::players), ServerStatus.Version.CODEC.optionalFieldOf("version").forGetter(ServerStatus::version), ServerStatus.Favicon.CODEC.optionalFieldOf("favicon").forGetter(ServerStatus::favicon), Codec.BOOL.optionalFieldOf("enforcesSecureChat", Boolean.FALSE).forGetter(ServerStatus::enforcesSecureChat)).apply(instance, ServerStatus::new); // DivineMC - Configurable Chat message signatures
      });
  
      public static record Favicon(byte[] iconBytes) {
@@ -78,7 +78,7 @@ index e64ac037eeeebd3b14d8652bdea7b05bbd85c7c3..7cf002599cf6a982dc616228eb7a9091
  
      @Override
      public boolean enforceSecureProfile() {
-+        if (gq.bxteam.divinemc.configuration.DivineConfig.chatMessageSignatures) return false; // DivineMC - Configurable Chat message signatures
++        if (io.wdsj.polpot.configuration.DivineConfig.chatMessageSignatures) return false; // DivineMC - Configurable Chat message signatures
          DedicatedServerProperties dedicatedserverproperties = this.getProperties();
  
          // Paper start - fix secure profile with proxy online mode
@@ -91,7 +91,7 @@ index 37a3ce5da2cb89675e0180c4ed937e5851cd002b..c73217929e9ae8264052ec4d6d46ac2c
  
      public void sendServerStatus(ServerStatus metadata) {
 -        this.connection.send(new ClientboundServerDataPacket(metadata.description(), metadata.favicon().map(ServerStatus.Favicon::iconBytes), metadata.enforcesSecureChat()));
-+        if (gq.bxteam.divinemc.configuration.DivineConfig.chatMessageSignatures) this.connection.send(new ClientboundServerDataPacket(metadata.description(), metadata.favicon().map(ServerStatus.Favicon::iconBytes), true)); else this.connection.send(new ClientboundServerDataPacket(metadata.description(), metadata.favicon().map(ServerStatus.Favicon::iconBytes), metadata.enforcesSecureChat())); // DivineMC - Configurable Chat message signatures
++        if (io.wdsj.polpot.configuration.DivineConfig.chatMessageSignatures) this.connection.send(new ClientboundServerDataPacket(metadata.description(), metadata.favicon().map(ServerStatus.Favicon::iconBytes), true)); else this.connection.send(new ClientboundServerDataPacket(metadata.description(), metadata.favicon().map(ServerStatus.Favicon::iconBytes), metadata.enforcesSecureChat())); // DivineMC - Configurable Chat message signatures
      }
  
      @Override
@@ -129,7 +129,7 @@ index da499e0b21eba40d24d95047e3a9220567d4bae7..af52d6c7f18f0837f4ffce95a310ddee
  
      public void send(Packet<?> packet) {
 +        // DivineMC start - Configurable Chat message signatures
-+        if (gq.bxteam.divinemc.configuration.DivineConfig.chatMessageSignatures) {
++        if (io.wdsj.polpot.configuration.DivineConfig.chatMessageSignatures) {
 +            if (packet instanceof net.minecraft.network.protocol.game.ClientboundPlayerChatPacket chat) {
 +                packet = new ClientboundSystemChatPacket(PaperAdventure.asAdventure(chat.chatType().resolve(this.player.level().registryAccess())
 +                    .get().decorate(chat.unsignedContent() != null ? chat.unsignedContent()
@@ -145,7 +145,7 @@ index da499e0b21eba40d24d95047e3a9220567d4bae7..af52d6c7f18f0837f4ffce95a310ddee
  
      public void send(Packet<?> packet, @Nullable PacketSendListener callbacks) {
 +        // DivineMC start - Configurable Chat message signatures
-+        if (gq.bxteam.divinemc.configuration.DivineConfig.chatMessageSignatures) {
++        if (io.wdsj.polpot.configuration.DivineConfig.chatMessageSignatures) {
 +            if (packet instanceof net.minecraft.network.protocol.game.ClientboundPlayerChatPacket chat && callbacks != null) {
 +                this.send(chat);
 +                return;
@@ -165,7 +165,7 @@ index a52f0b7d76dc71d176d960fc4f67f0683127112e..39142f0619d20393e043eda61e6a82b0
          boolean flag = this.verifyChatTrusted(message);
  
 -        this.server.logChatMessage((unsignedFunction == null ? message.decoratedContent() : unsignedFunction.apply(this.server.console)), params, flag ? null : "Not Secure"); // Paper
-+        this.server.logChatMessage((unsignedFunction == null ? message.decoratedContent() : unsignedFunction.apply(this.server.console)), params, flag ? null : (gq.bxteam.divinemc.configuration.DivineConfig.chatMessageSignatures ? null : "Not Secure")); // Paper // DivineMC - Configurable Chat message signatures
++        this.server.logChatMessage((unsignedFunction == null ? message.decoratedContent() : unsignedFunction.apply(this.server.console)), params, flag ? null : (io.wdsj.polpot.configuration.DivineConfig.chatMessageSignatures ? null : "Not Secure")); // Paper // DivineMC - Configurable Chat message signatures
          OutgoingChatMessage outgoingchatmessage = OutgoingChatMessage.create(message);
          boolean flag1 = false;
  
@@ -173,7 +173,7 @@ index a52f0b7d76dc71d176d960fc4f67f0683127112e..39142f0619d20393e043eda61e6a82b0
      }
  
      public boolean verifyChatTrusted(PlayerChatMessage message) { // Paper - private -> public
-+        if (gq.bxteam.divinemc.configuration.DivineConfig.chatMessageSignatures) return true; // DivineMC - Configurable Chat message signatures
++        if (io.wdsj.polpot.configuration.DivineConfig.chatMessageSignatures) return true; // DivineMC - Configurable Chat message signatures
          return message.hasSignature() && !message.hasExpiredServer(Instant.now());
      }
  

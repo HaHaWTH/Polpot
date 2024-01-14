@@ -1,18 +1,17 @@
-<img src="https://api.bxteam.gq/v3/resources/divinemc-logo.png" height="240" alt="DivineMC Face" align="right">
+<img src="https://s11.ax1x.com/2024/01/14/pFin4yD.jpg" height="240" alt="Polpot Face" align="right">
 
 <div align="center">
-  <h1>DivineMC</h1>
+  <h1>Polpot</h1>
   <h3>Fork of Purpur compatible with Spigot plugins, offering the best performance for your server.</h3>
   <br>
   
   [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/DivineMC/DivineMC/build.yml?logo=GoogleAnalytics&logoColor=ffffff&style=for-the-badge)](https://github.com/DivineMC/DivineMC/actions)
-  [![Discord](https://img.shields.io/discord/931595732752953375?color=5865F2&label=discord&style=for-the-badge)](https://discord.gg/p7cxhw7E2M)
   [![Download](https://img.shields.io/github/downloads/DivineMC/DivineMC/total?&style=for-the-badge&logoColor=ffffff)](https://github.com/DivineMC/DivineMC/releases/latest)
 </div>
 
 ## Features
 
-- **DivineMC is a fork of [Purpur](https://github.com/PurpurMC/Purpur)** designed for configurability, new fun and exciting gameplay features.
+- **Polpot is a fork of [Purpur](https://github.com/PurpurMC/Purpur)** designed for configurability, new fun and exciting gameplay features.
 - **Contains [Lithium](https://github.com/CaffeineMC/lithium-fabric) patches** that optimizing many areas in game.
 - **Implements** Linear region support.
 - **Bug fixes** for several Minecraft issues.

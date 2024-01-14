@@ -5,17 +5,17 @@ Subject: [PATCH] Divine Configuration
 
 This is modified config file by PurpurMC
 
-diff --git a/src/main/java/gq/bxteam/divinemc/DivineCommand.java b/src/main/java/gq/bxteam/divinemc/DivineCommand.java
+diff --git a/src/main/java/io/wdsj/polpot/DivineCommand.java b/src/main/java/io/wdsj/polpot/DivineCommand.java
 new file mode 100644
 index 0000000000000000000000000000000000000000..6ab4a0ae2a0f63e4dfdb36a561ccda2ad183caab
 --- /dev/null
-+++ b/src/main/java/gq/bxteam/divinemc/DivineCommand.java
++++ b/src/main/java/io/wdsj/polpot/DivineCommand.java
 @@ -0,0 +1,66 @@
-+package gq.bxteam.divinemc;
++package io.wdsj.polpot;
 +
 +import net.minecraft.server.MinecraftServer;
 +import net.minecraft.server.level.ServerLevel;
-+import gq.bxteam.divinemc.configuration.DivineConfig;
++import io.wdsj.polpot.configuration.DivineConfig;
 +import org.bukkit.ChatColor;
 +import org.bukkit.Location;
 +import org.bukkit.command.Command;
@@ -77,17 +77,17 @@ index 0000000000000000000000000000000000000000..6ab4a0ae2a0f63e4dfdb36a561ccda2a
 +        return true;
 +    }
 +}
-diff --git a/src/main/java/gq/bxteam/divinemc/configuration/DivineConfig.java b/src/main/java/gq/bxteam/divinemc/configuration/DivineConfig.java
+diff --git a/src/main/java/io/wdsj/polpot/configuration/DivineConfig.java b/src/main/java/io/wdsj/polpot/configuration/DivineConfig.java
 new file mode 100644
 index 0000000000000000000000000000000000000000..fa7ee2b2778a26d0e466bdc05ade26a5ae0c17f4
 --- /dev/null
-+++ b/src/main/java/gq/bxteam/divinemc/configuration/DivineConfig.java
++++ b/src/main/java/io/wdsj/polpot/configuration/DivineConfig.java
 @@ -0,0 +1,155 @@
-+package gq.bxteam.divinemc.configuration;
++package io.wdsj.polpot.configuration;
 +
 +import com.google.common.base.Throwables;
 +import com.google.common.collect.ImmutableMap;
-+import gq.bxteam.divinemc.DivineCommand;
++import io.wdsj.polpot.DivineCommand;
 +import net.minecraft.server.MinecraftServer;
 +import net.minecraft.world.level.block.Blocks;
 +import org.bukkit.Bukkit;
@@ -238,13 +238,13 @@ index 0000000000000000000000000000000000000000..fa7ee2b2778a26d0e466bdc05ade26a5
 +        return builder.build();
 +    }
 +}
-diff --git a/src/main/java/gq/bxteam/divinemc/configuration/DivineWorldConfig.java b/src/main/java/gq/bxteam/divinemc/configuration/DivineWorldConfig.java
+diff --git a/src/main/java/io/wdsj/polpot/configuration/DivineWorldConfig.java b/src/main/java/io/wdsj/polpot/configuration/DivineWorldConfig.java
 new file mode 100644
 index 0000000000000000000000000000000000000000..5d16d2250bae9c982a0af9ad2580a63532b140f7
 --- /dev/null
-+++ b/src/main/java/gq/bxteam/divinemc/configuration/DivineWorldConfig.java
++++ b/src/main/java/io/wdsj/polpot/configuration/DivineWorldConfig.java
 @@ -0,0 +1,80 @@
-+package gq.bxteam.divinemc.configuration;
++package io.wdsj.polpot.configuration;
 +
 +import org.apache.commons.lang.BooleanUtils;
 +import org.bukkit.World;
@@ -254,7 +254,7 @@ index 0000000000000000000000000000000000000000..5d16d2250bae9c982a0af9ad2580a635
 +import java.util.Map;
 +import java.util.function.Predicate;
 +
-+import static gq.bxteam.divinemc.configuration.DivineConfig.log;
++import static io.wdsj.polpot.configuration.DivineConfig.log;
 +
 +@SuppressWarnings("unused")
 +public class DivineWorldConfig {
@@ -335,12 +335,12 @@ index d21260dd1b7305949f063123b427dec1f5a00ae5..e64ac037eeeebd3b14d8652bdea7b05b
  
 +        // DivineMC start
 +        try {
-+            gq.bxteam.divinemc.configuration.DivineConfig.init((java.io.File) options.valueOf("divinemc-settings"));
++            io.wdsj.polpot.configuration.DivineConfig.init((java.io.File) options.valueOf("divinemc-settings"));
 +        } catch (Exception e) {
 +            DedicatedServer.LOGGER.error("Unable to load server configuration", e);
 +            return false;
 +        }
-+        gq.bxteam.divinemc.configuration.DivineConfig.registerCommands();
++        io.wdsj.polpot.configuration.DivineConfig.registerCommands();
 +        // DivineMC end
 +
          this.setPvpAllowed(dedicatedserverproperties.pvp);
@@ -355,7 +355,7 @@ index 2b5409e653be7d6b9c0529b512b2f7408b218011..1b318f6c281170cdaafd26a0bff4901e
  import java.util.function.Supplier;
  import javax.annotation.Nullable;
 +
-+import gq.bxteam.divinemc.configuration.DivineWorldConfig;
++import io.wdsj.polpot.configuration.DivineWorldConfig;
  import net.minecraft.CrashReport;
  import net.minecraft.CrashReportCategory;
  import net.minecraft.ReportedException;
@@ -363,7 +363,7 @@ index 2b5409e653be7d6b9c0529b512b2f7408b218011..1b318f6c281170cdaafd26a0bff4901e
  
      public final com.destroystokyo.paper.antixray.ChunkPacketBlockController chunkPacketBlockController; // Paper - Anti-Xray
      public final org.purpurmc.purpur.PurpurWorldConfig purpurConfig; // Purpur
-+    public final gq.bxteam.divinemc.configuration.DivineWorldConfig divinemcConfig; // DivineMC
++    public final io.wdsj.polpot.configuration.DivineWorldConfig divinemcConfig; // DivineMC
      public final co.aikar.timings.WorldTimingsHandler timings; // Paper
      public static BlockPos lastPhysicsProblem; // Spigot
      private org.spigotmc.TickLimiter entityLimiter;
@@ -383,7 +383,7 @@ index 08808e9d98380792b4d4c944b7b1723a3efb346d..c5c5731a755fe635384aad24c3ac5152
  import com.mojang.brigadier.tree.LiteralCommandNode;
  import com.mojang.serialization.Dynamic;
  import com.mojang.serialization.Lifecycle;
-+import gq.bxteam.divinemc.configuration.DivineConfig;
++import io.wdsj.polpot.configuration.DivineConfig;
  import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
  import java.awt.image.BufferedImage;
  import java.io.ByteArrayOutputStream;
@@ -391,7 +391,7 @@ index 08808e9d98380792b4d4c944b7b1723a3efb346d..c5c5731a755fe635384aad24c3ac5152
          org.spigotmc.SpigotConfig.init((File) this.console.options.valueOf("spigot-settings")); // Spigot
          this.console.paperConfigurations.reloadConfigs(this.console);
          org.purpurmc.purpur.PurpurConfig.init((File) console.options.valueOf("purpur-settings")); // Purpur
-+        gq.bxteam.divinemc.configuration.DivineConfig.init((File) console.options.valueOf("divinemc-settings")); // DivineMC
++        io.wdsj.polpot.configuration.DivineConfig.init((File) console.options.valueOf("divinemc-settings")); // DivineMC
          for (ServerLevel world : this.console.getAllLevels()) {
              // world.serverLevelData.setDifficulty(config.difficulty); // Paper - per level difficulty
              world.setSpawnSettings(world.serverLevelData.getDifficulty() != Difficulty.PEACEFUL && config.spawnMonsters, config.spawnAnimals); // Paper - per level difficulty (from MinecraftServer#setDifficulty(ServerLevel, Difficulty, boolean))
@@ -407,7 +407,7 @@ index 08808e9d98380792b4d4c944b7b1723a3efb346d..c5c5731a755fe635384aad24c3ac5152
          org.spigotmc.SpigotConfig.registerCommands(); // Spigot
          io.papermc.paper.command.PaperCommands.registerCommands(this.console); // Paper
          org.purpurmc.purpur.PurpurConfig.registerCommands(); // Purpur
-+        gq.bxteam.divinemc.configuration.DivineConfig.registerCommands(); // DivineMC
++        io.wdsj.polpot.configuration.DivineConfig.registerCommands(); // DivineMC
          this.overrideAllCommandBlockCommands = this.commandsConfiguration.getStringList("command-block-overrides").contains("*");
          this.ignoreVanillaPermissions = this.commandsConfiguration.getBoolean("ignore-vanilla-permissions");
  
