@@ -34,4 +34,4 @@ In order to distribute and use this server software, you need a paperclip file:
 Patches are licensed under GPL-3.0.  
 All other files are licensed under MIT.
 
-###### And we don't steal logo from YatopiaMC! [List of all forks](https://gist.github.com/SoSeDiK/1773ef2c239722f7083a25b2f78619ed)
+###### And we don't steal logo from Polpot!(?)
