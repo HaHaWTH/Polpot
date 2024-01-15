@@ -1,0 +1,47 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: HaHaWTH <id_cn00@outlook.com>
+Date: Mon, 15 Jan 2024 20:50:14 +0800
+Subject: [PATCH] Fix-MC-266334
+
+
+diff --git a/src/main/java/io/wdsj/polpot/configuration/DivineConfig.java b/src/main/java/io/wdsj/polpot/configuration/DivineConfig.java
+index 8cb6cb223563d0db652962f3118f1fd59afcf1e4..a43291bf1e4a6c8b5d8048f2339019724d40a55e 100644
+--- a/src/main/java/io/wdsj/polpot/configuration/DivineConfig.java
++++ b/src/main/java/io/wdsj/polpot/configuration/DivineConfig.java
+@@ -168,6 +168,11 @@ public class DivineConfig {
+         enableAppleSkinProtocol = getBoolean("network.protocol.leaves-appleskin-protocol", enableAppleSkinProtocol);
+     }
+ 
++    public static boolean fixMc266334 = false;
++    private static void fixMc266334() {
++        fixMc266334 = getBoolean("bugfix.mc-266334", fixMc266334);
++    }
++
+     public static int linearFlushFrequency = 10;
+     public static int linearFlushThreads = 1;
+     private static void regionFormatSettings() {
+diff --git a/src/main/java/net/minecraft/world/entity/decoration/ArmorStand.java b/src/main/java/net/minecraft/world/entity/decoration/ArmorStand.java
+index 1ea348b6007d8aebf1e0f29018a03eb10c445369..9b05216658fdd614d01455142a1f74f0512dc5ef 100644
+--- a/src/main/java/net/minecraft/world/entity/decoration/ArmorStand.java
++++ b/src/main/java/net/minecraft/world/entity/decoration/ArmorStand.java
+@@ -4,6 +4,8 @@ import java.util.Iterator;
+ import java.util.List;
+ import java.util.function.Predicate;
+ import javax.annotation.Nullable;
++
++import io.wdsj.polpot.configuration.DivineConfig;
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.core.NonNullList;
+ import net.minecraft.core.Rotations;
+@@ -515,6 +517,11 @@ public class ArmorStand extends LivingEntity {
+                     boolean flag = source.is(DamageTypeTags.CAN_BREAK_ARMOR_STAND);
+                     boolean flag1 = source.is(DamageTypeTags.ALWAYS_KILLS_ARMOR_STANDS);
+ 
++                    // Polpot - Fix MC-266334
++                    if (DivineConfig.fixMc266334 && !flag && source.getDirectEntity() instanceof net.minecraft.world.entity.projectile.ShulkerBullet){
++                        return false;
++                    }
++
+                     if (!flag && !flag1) {
+                         return false;
+                     } else {

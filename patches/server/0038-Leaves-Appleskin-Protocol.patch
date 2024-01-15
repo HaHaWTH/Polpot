@@ -18,7 +18,7 @@ index 9aa1687e11d62b16f8889f04a4f44d9f2a0a022b..38c976df26fe9bbee263210ccf5ee96b
      }
  
 +    public static boolean enableAppleSkinProtocol = false;
-+    private static void networkConfig() {
++    private static void enableAppleSkinProtocol() {
 +        enableAppleSkinProtocol = getBoolean("network.protocol.leaves-appleskin-protocol", enableAppleSkinProtocol);
 +    }
 +
