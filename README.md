@@ -15,6 +15,7 @@
 - **Contains [Lithium](https://github.com/CaffeineMC/lithium-fabric) patches** that optimizing many areas in game.
 - **Implements** Linear region support.
 - **Bug fixes** for several Minecraft issues.
+- **Backports** bug fixes of Mojang.
 - **Plugin compatibility** with Spigot & Paper plugins.
 - **Completely** removed Timings to save your server performance.
 - **Various optimizations** for vanilla methods.
