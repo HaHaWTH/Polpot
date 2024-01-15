@@ -1,4 +1,4 @@
-name: Build DivineMC
+name: Build Polpot
 on:
   push:
   workflow_dispatch:
@@ -31,7 +31,7 @@ jobs:
           echo "workflow=$GITHUB_RUN_NUMBER" >> $GITHUB_ENV
           chmod +x gradlew
 
-      - name: Patch
+      - name: Patch (Deurbanization)
         run: ./gradlew applyPatches --stacktrace
 
       - name: Create Reobf Jar
