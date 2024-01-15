@@ -19,7 +19,7 @@
 - **Completely** removed Timings to save your server performance.
 - **Optimizations** for vanilla methods.
 - **Brings back** some vanilla features.
-- **Mod Protocols** support
+- **Mod Protocols** support.
 - **~~Deurbanization for your server.~~**
 
 ## Downloads
