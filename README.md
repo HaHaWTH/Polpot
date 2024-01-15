@@ -17,7 +17,7 @@
 - **Bug fixes** for several Minecraft issues.
 - **Plugin compatibility** with Spigot & Paper plugins.
 - **Completely** removed Timings to save your server performance.
-- **Optimizations** for vanilla methods.
+- **Various optimizations** for vanilla methods.
 - **Brings back** some vanilla features.
 - **Mod Protocols** support.
 - **Better MSPT command** makes debugging easier.
