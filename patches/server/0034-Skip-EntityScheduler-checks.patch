@@ -82,7 +82,7 @@ index 24a88fb146fdcc54748ede097c7df4f471257354..26293a13cda8672dfa54e3bf76ca02eb
          //MinecraftTimings.bukkitSchedulerTimer.stopTiming(); // Spigot // Paper // Purpur
          // Paper start - Folia scheduler API
          ((io.papermc.paper.threadedregions.scheduler.FoliaGlobalRegionScheduler) Bukkit.getGlobalRegionScheduler()).tick();
-+        // SparklyPaper - skip EntityScheduler's executeTick checks if there isn't any tasks to be run
++        // Polpot - skip EntityScheduler's executeTick checks if there isn't any tasks to be run
 +        for (final Entity entity : entitiesWithScheduledTasks) {
 +            if (entity.isRemoved()) {
 +                continue;
