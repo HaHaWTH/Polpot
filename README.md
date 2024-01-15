@@ -19,6 +19,7 @@
 - **Completely** removed Timings to save your server performance.
 - **Optimizations** for vanilla methods.
 - **Brings back** some vanilla features.
+- **~~Deurbanization for your server.~~**
 
 ## Downloads
 
