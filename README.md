@@ -1,4 +1,4 @@
-<img src="https://s11.ax1x.com/2024/01/14/pFin4yD.jpg" height="240" alt="Polpot Face" align="right">
+<img src="pol.JPG" height="240" alt="Polpot Face" align="right">
 
 <div align="center">
   <h1>Polpot</h1>
