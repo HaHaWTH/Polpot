@@ -6,6 +6,7 @@
   <br>
 
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/HaHaWTH/Polpot/build.yml?logo=GoogleAnalytics&logoColor=ffffff&style=for-the-badge)](https://github.com/HaHaWTH/Polpot/actions)
+[![Download](https://img.shields.io/github/downloads/HaHaWTH/Polpot/total?&style=for-the-badge&logoColor=ffffff)](https://github.com/HaHaWTH/Polpot/releases/latest)
 </div>
 
 ## Features
