@@ -10,7 +10,7 @@ index 77bcdd0940c1efc94fcdedb35f16db3511f788bd..90ccacb20dafdaf0fc2738e46d0d8403
 +++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
 @@ -1417,7 +1417,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
                  // Paper end - check Y
-
+ 
                  // CraftBukkit start - respect vanish API
 -                if (flag && !player.getBukkitEntity().canSee(this.entity.getBukkitEntity())) { // Paper - only consider hits
 +                if (flag && !player.getBukkitEntity().canSeeChunkMapUpdatePlayer(this.entity.getBukkitEntity())) { // Paper - only consider hits // Polpot - Optimize canSee checks
@@ -31,13 +31,13 @@ index 8c90eddd40c8ab2f4d727e3c7d9b6312d57bf277..ecabf5944b338248939555c23e0f0531
      private static final WeakHashMap<Plugin, WeakReference<Plugin>> pluginWeakReferences = new WeakHashMap<>();
      private int hash = 0;
 @@ -2147,9 +2147,16 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
-
+ 
      @Override
      public boolean canSee(org.bukkit.entity.Entity entity) {
 -        return this.equals(entity) || entity.isVisibleByDefault() ^ this.invertedVisibilityEntities.containsKey(entity.getUniqueId()); // SPIGOT-7312: Can always see self
 +        return this.equals(entity) || entity.isVisibleByDefault() ^ (!invertedVisibilityEntities.isEmpty() && this.invertedVisibilityEntities.containsKey(entity.getUniqueId())); // SPIGOT-7312: Can always see self // Polpot - optimize canSee checks
      }
-
+ 
 +    // Polpot - optimize canSee checks
 +    // The check in ChunkMap#updatePlayer already rejects if it is the same entity, so we don't need to check it twice, especially because CraftPlayer's equals check is a bit expensive
 +    public boolean canSeeChunkMapUpdatePlayer(org.bukkit.entity.Entity entity) {
