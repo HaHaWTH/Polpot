@@ -18,6 +18,7 @@
 - **Plugin compatibility** with Spigot & Paper plugins.
 - **Completely** removed Timings to save your server performance.
 - **Optimizations** for vanilla methods.
+- **Brings back** some vanilla features.
 
 ## Downloads
 
