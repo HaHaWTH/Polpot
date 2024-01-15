@@ -1,0 +1,24 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: HaHaWTH <id_cn00@outlook.com>
+Date: Mon, 15 Jan 2024 17:27:01 +0800
+Subject: [PATCH] Fix-MC-248961
+
+
+diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
+index 660be3bf25e29a9976f777203383190919ba86db..d436e858ad5046d27982abe76bab93de67ac66e8 100644
+--- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
++++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
+@@ -1614,7 +1614,12 @@ public abstract class LivingEntity extends Entity implements Attackable {
+             }
+ 
+             if (this instanceof ServerPlayer) {
+-                CriteriaTriggers.ENTITY_HURT_PLAYER.trigger((ServerPlayer) this, source, f1, amount, flag);
++                // Polpot - Fix MC-248961
++                if (source.is(DamageTypeTags.DAMAGES_HELMET) && !this.getItemBySlot(EquipmentSlot.HEAD).isEmpty()) {
++                    CriteriaTriggers.ENTITY_HURT_PLAYER.trigger((ServerPlayer) this, source, f1 * 0.75F, amount, flag);
++                } else {
++                    CriteriaTriggers.ENTITY_HURT_PLAYER.trigger((ServerPlayer) this, source, f1, amount, flag);
++                }
+                 if (f2 > 0.0F && f2 < 3.4028235E37F) {
+                     ((ServerPlayer) this).awardStat(Stats.DAMAGE_BLOCKED_BY_SHIELD, Math.round(f2 * 10.0F));
+                 }
