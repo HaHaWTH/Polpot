@@ -1,0 +1,249 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: HaHaWTH <id_cn00@outlook.com>
+Date: Mon, 15 Jan 2024 12:08:59 +0800
+Subject: [PATCH] Leaves-Server-Utils
+
+
+diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
+index 29e040ff5c2d5c4022dd18d807b1b665e2acbe9c..88f979437f058cbc2991e3078b421275870dc9a2 100644
+--- a/src/main/java/net/minecraft/world/entity/Entity.java
++++ b/src/main/java/net/minecraft/world/entity/Entity.java
+@@ -422,6 +422,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource, S
+     private UUID originWorld;
+     public boolean freezeLocked = false; // Paper - Freeze Tick Lock API
+     public boolean fixedPose = false; // Paper
++    private CompoundTag leavesData = new CompoundTag(); // Leaves - Leaves ex data
+     public @Nullable Boolean immuneToFire = null; // Purpur - Fire immune API
+ 
+     public void setOrigin(@javax.annotation.Nonnull Location location) {
+@@ -2500,6 +2501,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource, S
+             if (freezeLocked) {
+                 nbttagcompound.putBoolean("Paper.FreezeLock", true);
+             }
++            nbttagcompound.put("Leaves.Data", leavesData); // Leaves - leaves ex data
+             // Paper end
+             // Purpur start
+             if (immuneToFire != null) {
+@@ -2672,6 +2674,11 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource, S
+                 freezeLocked = nbt.getBoolean("Paper.FreezeLock");
+             }
+             // Paper end
++            // Leaves start - leaves ex data
++            if (nbt.contains("Leaves.Data")) {
++                leavesData = nbt.getCompound("Leaves.Data");
++            }
++            // Leaves end - leaves ex data
+             // Purpur start
+             if (nbt.contains("Purpur.FireImmune")) {
+                 immuneToFire = nbt.getBoolean("Purpur.FireImmune");
+@@ -5105,4 +5112,10 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource, S
+         return false;
+     }
+     // Purpur end
++
++    // Leaves start - leaves ex data
++    public CompoundTag getLeavesData() {
++        return leavesData;
++    }
++    // Leaves end - leaves ex data
+ }
+diff --git a/src/main/java/top/leavesmc/leaves/LeavesLogger.java b/src/main/java/top/leavesmc/leaves/LeavesLogger.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..e9ffd16ca6d71de97917524382ff1fb8747d2f7b
+--- /dev/null
++++ b/src/main/java/top/leavesmc/leaves/LeavesLogger.java
+@@ -0,0 +1,13 @@
++package top.leavesmc.leaves;
++
++import org.bukkit.Bukkit;
++import java.util.logging.Level;
++import java.util.logging.Logger;
++public class LeavesLogger extends Logger {
++    public static final LeavesLogger LOGGER = new LeavesLogger();
++    private LeavesLogger() {
++        super("Leaves", null);
++        setParent(Bukkit.getLogger());
++        setLevel(Level.ALL);
++    }
++}
+\ No newline at end of file
+diff --git a/src/main/java/top/leavesmc/leaves/util/AsyncExecutor.java b/src/main/java/top/leavesmc/leaves/util/AsyncExecutor.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..eaea36a666cfc5b6cb68caed2ea67ccb4ceca06a
+--- /dev/null
++++ b/src/main/java/top/leavesmc/leaves/util/AsyncExecutor.java
+@@ -0,0 +1,70 @@
++package top.leavesmc.leaves.util;
++
++import com.google.common.collect.Queues;
++import top.leavesmc.leaves.LeavesLogger;
++import java.util.Queue;
++import java.util.concurrent.locks.Condition;
++import java.util.concurrent.locks.Lock;
++import java.util.concurrent.locks.ReentrantLock;
++import java.util.logging.Level;
++
++// Powered by Pufferfish(https://github.com/pufferfish-gg/Pufferfish)
++public class AsyncExecutor implements Runnable {
++    private final Queue<Runnable> jobs = Queues.newArrayDeque();
++    private final Lock mutex = new ReentrantLock();
++    private final Condition cond = mutex.newCondition();
++    private final Thread thread;
++    private volatile boolean killswitch = false;
++
++    public AsyncExecutor(String threadName) {
++        this.thread = new Thread(this, threadName);
++    }
++
++    public void start() {
++        thread.start();
++    }
++
++    public void kill() {
++        killswitch = true;
++        cond.signalAll();
++    }
++
++    public void submit(Runnable runnable) {
++        mutex.lock();
++        try {
++            jobs.offer(runnable);
++            cond.signalAll();
++        } finally {
++            mutex.unlock();
++        }
++    }
++    @Override
++    public void run() {
++        while (!killswitch) {
++            try {
++                Runnable runnable = takeRunnable();
++                if (runnable != null) {
++                    runnable.run();
++                }
++            } catch (InterruptedException e) {
++                Thread.currentThread().interrupt();
++            } catch (Exception e) {
++                LeavesLogger.LOGGER.log(Level.SEVERE, e, () -> "Failed to execute async job for thread " + thread.getName());
++            }
++        }
++    }
++    private Runnable takeRunnable() throws InterruptedException {
++        mutex.lock();
++        try {
++            while (jobs.isEmpty() && !killswitch) {
++                cond.await();
++            }
++            if (jobs.isEmpty()) {
++                return null;
++            }
++            return jobs.remove();
++        } finally {
++            mutex.unlock();
++        }
++    }
++}
+\ No newline at end of file
+diff --git a/src/main/java/top/leavesmc/leaves/util/AsyncPlayerAreaMap.java b/src/main/java/top/leavesmc/leaves/util/AsyncPlayerAreaMap.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..4d6ca4480be1d93f827da2fe4dced7dff9660d79
+--- /dev/null
++++ b/src/main/java/top/leavesmc/leaves/util/AsyncPlayerAreaMap.java
+@@ -0,0 +1,29 @@
++package top.leavesmc.leaves.util;
++
++import com.destroystokyo.paper.util.misc.PlayerAreaMap;
++import com.destroystokyo.paper.util.misc.PooledLinkedHashSets;
++import gg.pufferfish.pufferfish.util.Long2ObjectOpenHashMapWrapper;
++import net.minecraft.server.level.ServerPlayer;
++
++import java.util.concurrent.ConcurrentHashMap;
++
++// Powered by Pufferfish(https://github.com/pufferfish-gg/Pufferfish)
++public class AsyncPlayerAreaMap extends PlayerAreaMap {
++    public AsyncPlayerAreaMap() {
++        super();
++        this.areaMap = new Long2ObjectOpenHashMapWrapper<>(new ConcurrentHashMap<>(1024, 0.7f));
++    }
++    public AsyncPlayerAreaMap(final PooledLinkedHashSets<ServerPlayer> pooledHashSets) {
++        super(pooledHashSets);
++        this.areaMap = new Long2ObjectOpenHashMapWrapper<>(new ConcurrentHashMap<>(1024, 0.7f));
++    }
++    public AsyncPlayerAreaMap(final PooledLinkedHashSets<ServerPlayer> pooledHashSets, final ChangeCallback<ServerPlayer> addCallback,
++                              final ChangeCallback<ServerPlayer> removeCallback) {
++        this(pooledHashSets, addCallback, removeCallback, null);
++    }
++
++    public AsyncPlayerAreaMap(final PooledLinkedHashSets<ServerPlayer> pooledHashSets, final ChangeCallback<ServerPlayer> addCallback, final ChangeCallback<ServerPlayer> removeCallback, final ChangeSourceCallback<ServerPlayer> changeSourceCallback) {
++        super(pooledHashSets, addCallback, removeCallback, changeSourceCallback);
++        this.areaMap = new Long2ObjectOpenHashMapWrapper<>(new ConcurrentHashMap<>(1024, 0.7f));
++    }
++}
+\ No newline at end of file
+diff --git a/src/main/java/top/leavesmc/leaves/util/IterableWrapper.java b/src/main/java/top/leavesmc/leaves/util/IterableWrapper.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..8dbdc62441e58b9f2b17016368acd9d5664e91bc
+--- /dev/null
++++ b/src/main/java/top/leavesmc/leaves/util/IterableWrapper.java
+@@ -0,0 +1,16 @@
++package top.leavesmc.leaves.util;
++
++import org.jetbrains.annotations.NotNull;
++import java.util.Iterator;
++// Powered by Pufferfish(https://github.com/pufferfish-gg/Pufferfish)
++public class IterableWrapper<T> implements Iterable<T> {
++    private final Iterator<T> iterator;
++    public IterableWrapper(Iterator<T> iterator) {
++        this.iterator = iterator;
++    }
++    @NotNull
++    @Override
++    public Iterator<T> iterator() {
++                return iterator;
++    }
++}
+\ No newline at end of file
+diff --git a/src/main/java/top/leavesmc/leaves/util/Long2ObjectOpenHashMapWrapper.java b/src/main/java/top/leavesmc/leaves/util/Long2ObjectOpenHashMapWrapper.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..730ff02723bf4703159ca2054d3a98acc2bf3faf
+--- /dev/null
++++ b/src/main/java/top/leavesmc/leaves/util/Long2ObjectOpenHashMapWrapper.java
+@@ -0,0 +1,37 @@
++package top.leavesmc.leaves.util;
++
++import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
++import org.jetbrains.annotations.Nullable;
++import java.util.Map;
++
++@Deprecated(forRemoval = true)
++public class Long2ObjectOpenHashMapWrapper<V> extends Long2ObjectOpenHashMap<V> {
++
++    private final Map<Long, V> backingMap;
++    public Long2ObjectOpenHashMapWrapper(Map<Long, V> map) {
++        backingMap = map;
++    }
++    @Override
++    public V put(Long key, V value) {
++        return backingMap.put(key, value);
++    }
++
++    @Override
++    public V get(Object key) {
++        return backingMap.get(key);
++    }
++    @Override
++    public V remove(Object key) {
++        return backingMap.remove(key);
++    }
++    @Nullable
++    @Override
++    public V putIfAbsent(Long key, V value) {
++        return backingMap.putIfAbsent(key, value);
++    }
++
++    @Override
++    public int size() {
++        return backingMap.size();
++    }
++}
+\ No newline at end of file
