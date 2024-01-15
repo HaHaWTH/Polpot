@@ -1,0 +1,122 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: HaHaWTH <id_cn00@outlook.com>
+Date: Mon, 15 Jan 2024 13:36:03 +0800
+Subject: [PATCH] Better-mspt-command
+
+
+diff --git a/src/main/java/io/papermc/paper/command/MSPTCommand.java b/src/main/java/io/papermc/paper/command/MSPTCommand.java
+index 8b5293b0c696ef21d0101493ffa41b60bf0bc86b..6dbeab29141ebed238f1a78d1fc5048965f6a19e 100644
+--- a/src/main/java/io/papermc/paper/command/MSPTCommand.java
++++ b/src/main/java/io/papermc/paper/command/MSPTCommand.java
+@@ -44,40 +44,44 @@ public final class MSPTCommand extends Command {
+ 
+         MinecraftServer server = MinecraftServer.getServer();
+ 
+-        List<Component> times = new ArrayList<>();
+-        times.addAll(eval(server.tickTimes5s.getTimes()));
+-        times.addAll(eval(server.tickTimes10s.getTimes()));
+-        times.addAll(eval(server.tickTimes60s.getTimes()));
+-
+-        sender.sendMessage(text().content("Server tick times ").color(GOLD)
+-            .append(text().color(YELLOW)
+-                .append(
+-                    text("("),
+-                    text("avg", GRAY),
+-                    text("/"),
+-                    text("min", GRAY),
+-                    text("/"),
+-                    text("max", GRAY),
+-                    text(")")
+-                )
+-            ).append(
+-                text(" from last 5s"),
+-                text(",", GRAY),
+-                text(" 10s"),
+-                text(",", GRAY),
+-                text(" 1m"),
+-                text(":", YELLOW)
+-            )
+-        );
+-        sender.sendMessage(text().content("◴ ").color(GOLD)
+-            .append(text().color(GRAY)
+-                .append(
+-                    times.get(0), SLASH, times.get(1), SLASH, times.get(2), text(", ", YELLOW),
+-                    times.get(3), SLASH, times.get(4), SLASH, times.get(5), text(", ", YELLOW),
+-                    times.get(6), SLASH, times.get(7), SLASH, times.get(8)
++        // Polpot start - track world's MSPT
++        sender.sendMessage(text());
++        sender.sendMessage(text().content("World tick times ").color(GOLD)
++                .append(text().color(YELLOW)
++                        .append(
++                                text("("),
++                                text("avg", GRAY),
++                                text("/"),
++                                text("min", GRAY),
++                                text("/"),
++                                text("max", GRAY),
++                                text(")")
++                        )
++                ).append(
++                        text(" from last 5s"),
++                        text(",", GRAY),
++                        text(" 10s"),
++                        text(",", GRAY),
++                        text(" 1m"),
++                        text(":", YELLOW)
+                 )
+-            )
+         );
++        for (net.minecraft.server.level.ServerLevel serverLevel : server.getAllLevels()) {
++            List<Component> worldTimes = new ArrayList<>();
++            worldTimes.addAll(eval(serverLevel.tickTimes5s.getTimes()));
++            worldTimes.addAll(eval(serverLevel.tickTimes10s.getTimes()));
++            worldTimes.addAll(eval(serverLevel.tickTimes60s.getTimes()));
++            sender.sendMessage(text().content("◴ " + serverLevel.getWorld().getName() + ": ").color(GOLD)
++                    .append(text().color(GRAY)
++                            .append(
++                                    worldTimes.get(0), SLASH, worldTimes.get(1), SLASH, worldTimes.get(2), text(", ", YELLOW),
++                                    worldTimes.get(3), SLASH, worldTimes.get(4), SLASH, worldTimes.get(5), text(", ", YELLOW),
++                                    worldTimes.get(6), SLASH, worldTimes.get(7), SLASH, worldTimes.get(8)
++                            )
++                    )
++            );
++        }
++        // Polpot end
+         return true;
+     }
+ 
+diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
+index 0f103cb610ec495af5ccf88aeeeaf688c4099aea..f133ae512bd565cf669fd6aa22e1495e3cd6e15b 100644
+--- a/src/main/java/net/minecraft/server/MinecraftServer.java
++++ b/src/main/java/net/minecraft/server/MinecraftServer.java
+@@ -1753,7 +1753,14 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+ 
+             try {
+                 //worldserver.timings.doTick.startTiming(); // Spigot // Purpur
++                long i = Util.getNanos(); // Polpot - track world's MSPT
+                 worldserver.tick(shouldKeepTicking);
++                long j = Util.getNanos() - i;
++                // These are from the "tickServer" function
++                worldserver.tickTimes5s.add(this.tickCount, j);
++                worldserver.tickTimes10s.add(this.tickCount, j);
++                worldserver.tickTimes60s.add(this.tickCount, j);
++                // Polpot end
+                 // Paper start
+                 for (final io.papermc.paper.chunk.SingleThreadChunkRegionManager regionManager : worldserver.getChunkSource().chunkMap.regionManagers) {
+                     regionManager.recalculateRegions();
+diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
+index 8cefd518d29b56061d2425c1570a93a6edb5368a..ddecd430e4da6803d5e26179fbccebebcc6dba40 100644
+--- a/src/main/java/net/minecraft/server/level/ServerLevel.java
++++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
+@@ -644,6 +644,11 @@ public class ServerLevel extends Level implements WorldGenLevel {
+     }
+     // Paper end - optimise nearby player retrieval
+ 
++    // Polpot start - track world's MSPT
++    public final MinecraftServer.TickTimes tickTimes5s = new MinecraftServer.TickTimes(100);
++    public final MinecraftServer.TickTimes tickTimes10s = new MinecraftServer.TickTimes(200);
++    public final MinecraftServer.TickTimes tickTimes60s = new MinecraftServer.TickTimes(1200);
++    // Polpot end
+     // Add env and gen to constructor, IWorldDataServer -> WorldDataServer
+     public ServerLevel(MinecraftServer minecraftserver, Executor executor, LevelStorageSource.LevelStorageAccess convertable_conversionsession, PrimaryLevelData iworlddataserver, ResourceKey<Level> resourcekey, LevelStem worlddimension, ChunkProgressListener worldloadlistener, boolean flag, long i, List<CustomSpawner> list, boolean flag1, @Nullable RandomSequences randomsequences, org.bukkit.World.Environment env, org.bukkit.generator.ChunkGenerator gen, org.bukkit.generator.BiomeProvider biomeProvider) {
+         // IRegistryCustom.Dimension iregistrycustom_dimension = minecraftserver.registryAccess(); // CraftBukkit - decompile error

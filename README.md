@@ -20,6 +20,7 @@
 - **Optimizations** for vanilla methods.
 - **Brings back** some vanilla features.
 - **Mod Protocols** support.
+- **Better MSPT command** makes debugging easier.
 - **~~Deurbanization for your server.~~**
 
 ## Downloads
