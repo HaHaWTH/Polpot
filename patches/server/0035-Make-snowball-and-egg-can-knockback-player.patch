@@ -1,0 +1,76 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: HaHaWTH <id_cn00@outlook.com>
+Date: Mon, 15 Jan 2024 10:28:34 +0800
+Subject: [PATCH] Make-snowball-and-egg-can-knockback-player
+
+
+diff --git a/src/main/java/io/wdsj/polpot/configuration/DivineConfig.java b/src/main/java/io/wdsj/polpot/configuration/DivineConfig.java
+index 1ed3eace810d5c7c5284292ceada4a2d52d412a1..11434e95b015ae653ca4cdea98da97987fec94fb 100644
+--- a/src/main/java/io/wdsj/polpot/configuration/DivineConfig.java
++++ b/src/main/java/io/wdsj/polpot/configuration/DivineConfig.java
+@@ -158,6 +158,11 @@ public class DivineConfig {
+         doNotProcessChatCommands = getBoolean("settings.do-not-process-chat-commands", doNotProcessChatCommands);
+     }
+ 
++    public static boolean snowballAndEggCanKnockback = false;
++    private static void SnowballAndEggCanKnockback() {
++        snowballAndEggCanKnockback = getBoolean("settings.snowball-egg-knockback-players", snowballAndEggCanKnockback);
++    }
++
+     public static int linearFlushFrequency = 10;
+     public static int linearFlushThreads = 1;
+     private static void regionFormatSettings() {
+diff --git a/src/main/java/net/minecraft/world/entity/projectile/Snowball.java b/src/main/java/net/minecraft/world/entity/projectile/Snowball.java
+index 440d3d72d8b2dac14f83a83caa5ae9dbf3e979b6..36865bd06992982dacebbb3952f2574f474865a5 100644
+--- a/src/main/java/net/minecraft/world/entity/projectile/Snowball.java
++++ b/src/main/java/net/minecraft/world/entity/projectile/Snowball.java
+@@ -1,8 +1,10 @@
+ package net.minecraft.world.entity.projectile;
+ 
++import io.wdsj.polpot.configuration.DivineConfig;
+ import net.minecraft.core.particles.ItemParticleOption;
+ import net.minecraft.core.particles.ParticleOptions;
+ import net.minecraft.core.particles.ParticleTypes;
++import net.minecraft.server.level.ServerPlayer;
+ import net.minecraft.world.entity.Entity;
+ import net.minecraft.world.entity.EntityType;
+ import net.minecraft.world.entity.LivingEntity;
+@@ -55,6 +57,12 @@ public class Snowball extends ThrowableItemProjectile {
+         Entity entity = entityHitResult.getEntity();
+         int i = entity.level().purpurConfig.snowballDamage >= 0 ? entity.level().purpurConfig.snowballDamage : entity instanceof Blaze ? 3 : 0; // Purpur
+         entity.hurt(this.damageSources().thrown(this, this.getOwner()), (float)i);
++        // Polpot start - make snowball can knockback player
++        if (DivineConfig.snowballAndEggCanKnockback && entity instanceof ServerPlayer) {
++            entity.hurt(this.damageSources().thrown(this, this.getOwner()), 0.0000001F);
++            ((ServerPlayer) entity).knockback(0.4000000059604645D, this.getX() - entity.getX(), this.getZ() - entity.getZ(), this);
++        }
++        // Polpot end
+     }
+ 
+     // Purpur start - borrowed and modified code from ThrownPotion#onHitBlock and ThrownPotion#dowseFire
+diff --git a/src/main/java/net/minecraft/world/entity/projectile/ThrownEgg.java b/src/main/java/net/minecraft/world/entity/projectile/ThrownEgg.java
+index b64ecadae45c2126b92963ac8d118dde76126ddd..c150043f187946ab5d326b708feac1427ee9c661 100644
+--- a/src/main/java/net/minecraft/world/entity/projectile/ThrownEgg.java
++++ b/src/main/java/net/minecraft/world/entity/projectile/ThrownEgg.java
+@@ -1,5 +1,6 @@
+ package net.minecraft.world.entity.projectile;
+ 
++import io.wdsj.polpot.configuration.DivineConfig;
+ import net.minecraft.world.item.Item;
+ import net.minecraft.world.item.Items;
+ import net.minecraft.world.level.Level;
+@@ -45,7 +46,14 @@ public class ThrownEgg extends ThrowableItemProjectile {
+     @Override
+     protected void onHitEntity(EntityHitResult entityHitResult) {
+         super.onHitEntity(entityHitResult);
++        Entity entity = entityHitResult.getEntity(); // Polpot - make egg can knockback player
+         entityHitResult.getEntity().hurt(this.damageSources().thrown(this, this.getOwner()), 0.0F);
++        // Polpot start - make egg can knockback player
++        if (DivineConfig.snowballAndEggCanKnockback && entity instanceof ServerPlayer) {
++            entity.hurt(this.damageSources().thrown(this, this.getOwner()), 0.0000001F);
++            ((ServerPlayer) entity).knockback(0.4000000059604645D, this.getX() - entity.getX(), this.getZ() - entity.getZ(), this);
++        }
++        // Polpot end - make egg can knockback player
+     }
+ 
+     @Override
